@@ -1,19 +1,25 @@
 apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
-  name: hippo-ha
+  name: eloaas-ha
 spec:
   image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-0
   postgresVersion: 15
+  users:
+    - name: postgres
+    - name: elodb-idnds-test
+      databases:
+        - elodb-idnds-test
+      options: "LOGIN CREATEDB"
   instances:
-    - name: pgha1
+    - name: eloaas-idnds-test
       replicas: 2
       dataVolumeClaimSpec:
         accessModes:
         - "ReadWriteOnce"
         resources:
           requests:
-            storage: 1Gi
+            storage: 20Gi
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -22,8 +28,26 @@ spec:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  postgres-operator.crunchydata.com/cluster: hippo-ha
-                  postgres-operator.crunchydata.com/instance-set: pgha1
+                  postgres-operator.crunchydata.com/cluster: eloaas-ha
+                  postgres-operator.crunchydata.com/instance-set: eloaas-idnds-test
+    - name: eloaas-doku-test
+      replicas: 2
+      dataVolumeClaimSpec:
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 20Gi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  postgres-operator.crunchydata.com/cluster: eloaas-ha
+                  postgres-operator.crunchydata.com/instance-set: eloaas-doku-test
   backups:
     pgbackrest:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-0
@@ -35,7 +59,7 @@ spec:
             - "ReadWriteOnce"
             resources:
               requests:
-                storage: 1Gi
+                storage: 50Gi
   proxy:
     pgBouncer:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.19-0
@@ -48,5 +72,5 @@ spec:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  postgres-operator.crunchydata.com/cluster: hippo-ha
+                  postgres-operator.crunchydata.com/cluster: eloaas-ha
                   postgres-operator.crunchydata.com/role: pgbouncer
