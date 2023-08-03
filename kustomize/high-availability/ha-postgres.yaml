@@ -3,7 +3,7 @@ kind: PostgresCluster
 metadata:
   name: eloaas-ha
 spec:
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-0
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-2
   postgresVersion: 15
   users:
     - name: postgres
@@ -50,7 +50,7 @@ spec:
                   postgres-operator.crunchydata.com/instance-set: eloaas-doku-test
   backups:
     pgbackrest:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-0
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-2
       repos:
       - name: repo1
         volume:
@@ -62,7 +62,7 @@ spec:
                 storage: 50Gi
   proxy:
     pgBouncer:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.19-0
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.19-2
       replicas: 2
       affinity:
         podAntiAffinity:
