@@ -1,18 +1,12 @@
 apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
-  name: eloaas-ha
+  name: hippo-ha
 spec:
   image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-15.3-2
   postgresVersion: 15
-  users:
-    - name: postgres
-    - name: elodb-idnds-test
-      databases:
-        - elodb-idnds-test
-      options: "LOGIN CREATEDB"
   instances:
-    - name: eloaas-idnds-test
+    - name: hippo
       replicas: 2
       dataVolumeClaimSpec:
         accessModes:
@@ -28,26 +22,8 @@ spec:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  postgres-operator.crunchydata.com/cluster: eloaas-ha
-                  postgres-operator.crunchydata.com/instance-set: eloaas-idnds-test
-    - name: eloaas-doku-test
-      replicas: 2
-      dataVolumeClaimSpec:
-        accessModes:
-        - "ReadWriteOnce"
-        resources:
-          requests:
-            storage: 20Gi
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  postgres-operator.crunchydata.com/cluster: eloaas-ha
-                  postgres-operator.crunchydata.com/instance-set: eloaas-doku-test
+                  postgres-operator.crunchydata.com/cluster: hippo-ha
+                  postgres-operator.crunchydata.com/instance-set: hippo
   backups:
     pgbackrest:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-2
@@ -72,5 +48,5 @@ spec:
               topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  postgres-operator.crunchydata.com/cluster: eloaas-ha
+                  postgres-operator.crunchydata.com/cluster: hippo-ha
                   postgres-operator.crunchydata.com/role: pgbouncer
